@@ -72,8 +72,9 @@ public final class SieveActor extends Sieve {
                 if (candidate % prime != 0) {
                     if (nextActor == null) {
                         nextActor = new SieveActorActor(candidate);
+                    } else {
+                        nextActor.send(msg);
                     }
-                    nextActor.send(msg);
                 }
             }
         }
