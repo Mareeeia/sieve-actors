@@ -26,10 +26,12 @@ public final class SieveActor extends Sieve {
     @Override
     public int countPrimes(final int limit) {
         final SieveActorActor firstActor = new SieveActorActor(2);
-        for (int i = 3; i <= limit; i += 2) {
-            Integer num = i;
-            finish(() -> firstActor.process(num));
-        }
+        finish(() -> {
+            for (int i = 3; i <= limit; i += 2) {
+                Integer num = i;
+                firstActor.send(num);
+            }
+        });
         int count = 0;
 
         SieveActorActor iter = firstActor;
@@ -62,19 +64,12 @@ public final class SieveActor extends Sieve {
          */
         @Override
         public void process(Object msg) {
-            final int candidate = (Integer) msg;
-            if (candidate <= 0) {
-                if (nextActor != null) {
+        final int candidate = (Integer) msg;
+            if (candidate % prime != 0) {
+                if (nextActor == null) {
+                    nextActor = new SieveActorActor(candidate);
+                } else {
                     nextActor.send(msg);
-                }
-            }
-            else {
-                if (candidate % prime != 0) {
-                    if (nextActor == null) {
-                        nextActor = new SieveActorActor(candidate);
-                    } else {
-                        nextActor.send(msg);
-                    }
                 }
             }
         }
